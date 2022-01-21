@@ -22,8 +22,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from os.path import join, dirname
 from twitchio.ext import commands
-import datetime
 import ipdb # equivalent to Ruby's Pry - add `ipdb.set_trace()` where needed to inspect scoped variables etc
+from lib.tundex import tundexasked, dayssincetundexasked, whendidtundexask
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 dotenv_path = join(dir_path, '.env')
@@ -36,7 +36,7 @@ BOT_NICK = os.environ.get('BOT_NICK')
 BOT_PREFIX = os.environ.get('BOT_PREFIX')
 CHANNEL = os.environ.get('CHANNEL')
 
-JSON_FILE = str(os.path.dirname(os.path.realpath(__file__))) + '/data.json'
+JSON_FILEPATH = str(os.path.dirname(os.path.realpath(__file__))) + '/data.json'
 
 
 bot = commands.Bot(
@@ -139,56 +139,19 @@ async def on_sub(ctx):
 
 @bot.command(name='tundexasked')
 async def on_tundexasked(ctx):
-    # parse command
-    command_string = ctx.message.content
-    # remove command and white space
-    command_string = command_string.replace('!tundexasked', '').strip()
+    await tundexasked(ctx, JSON_FILEPATH)
 
-    date = None
-
-    if (len(command_string) > 0):
-        try:
-            date = datetime.datetime.strptime(command_string, '%Y%m%d')
-        except ValueError:
-            await ctx.send('Incorrect date format')
-    else:
-        date = datetime.date.today()
-
-    if (date != None):
-        data = None
-
-        with open(JSON_FILE) as json_file:
-            data = json.load(json_file)
-
-        if data is not None:
-            data['tundexasked'] = date.strftime('%Y%m%d')
-
-        with open(JSON_FILE, 'w') as json_file:
-            json.dump(data, json_file, sort_keys=True, indent=4)
-        
-        await ctx.send(f'Tundex asked again!? Taking note that Tundex asked on {date.strftime("%-d %B %Y")}')
+@bot.command(name='dayssincetundexasked')
+async def on_dayssincetundexasked(ctx):
+    await dayssincetundexasked(ctx, JSON_FILEPATH)
 
 @bot.command(name='whendidtundexask')
 async def on_whendidtundexask(ctx):
-    with open(JSON_FILE) as json_file:
-
-        data = json.load(json_file)
-        date_string = data['tundexasked']
-        date = datetime.datetime.strptime(date_string, '%Y%m%d')
-        await ctx.send(f'Tundex last asked on {date.strftime("%-d %B %Y")}')
-
-@bot.command(name='dayssincetundexasked')
-async def on_whendidtundexask(ctx):
-    with open(JSON_FILE) as json_file:
-        data = json.load(json_file)
-        date_string = data['tundexasked']
-        date = datetime.datetime.strptime(date_string, '%Y%m%d')
-        days_since_date = datetime.datetime.today() - date
-        await ctx.send(f'Tundex last asked {days_since_date.days} days ago')
+    await whendidtundexask(ctx, JSON_FILEPATH)
 
 def get_count():
     """ Reads the count from the JSON file and returns it """
-    with open(JSON_FILE) as json_file:
+    with open(JSON_FILEPATH) as json_file:
         data = json.load(json_file)
         return data['count']
 
@@ -196,13 +159,13 @@ def update_count(count):
     """ Updates the JSON file with count given """
     data = None
 
-    with open(JSON_FILE) as json_file:
+    with open(JSON_FILEPATH) as json_file:
         data = json.load(json_file)
 
     if data is not None:
         data['count'] = count
 
-    with open(JSON_FILE, 'w') as json_file:
+    with open(JSON_FILEPATH, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True, indent=4)
 
 
