@@ -50,7 +50,7 @@ async def event_message(ctx):
     await bot.handle_commands(ctx)
 
     # greets user if they send a greeting from a list (defined in function)
-    await hello(ctx)
+    await greet(ctx)
 
 
 # commands, which call functions defined in lib - after adding a new

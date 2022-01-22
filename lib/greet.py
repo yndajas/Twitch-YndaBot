@@ -1,4 +1,4 @@
-async def hello(ctx):
+async def greet(ctx):
     greetings = [
         "Ahn nyong ha se yo",
         "Ahn-nyong-ha-se-yo",
