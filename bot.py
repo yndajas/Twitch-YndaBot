@@ -1,174 +1,92 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-__author__      = "Konstantin (k0nze) Lübeck"
-__copyright__   = "Copyright 2020, Twitch Count Bot"
-__credits__     = ["NinjaBunny9000: https://github.com/NinjaBunny9000/barebones-twitch-bot"]
-
-__license__     = "BSD 3-Clause License"
-__version__     = "0.1"
-__contact__     = {
-                    "Twitch": "https://twitch.tv/k0nze",
-                    "Youtube": "https://youtube.com/k0nze",
-                    "Twitter": "https://twitter.com/k0nze_gg",
-                    "Instagram": "https://instagram.com/k0nze.gg",
-                    "Discord": "https://discord.k0nze.gg",
-                }
-
+# import from external libraries
 import os
-import json
-
-from pathlib import Path
+import ipdb  # equivalent to Ruby's Pry - add `ipdb.set_trace()` where needed to inspect scoped variables etc
 from dotenv import load_dotenv
-from os.path import join, dirname
 from twitchio.ext import commands
-import ipdb # equivalent to Ruby's Pry - add `ipdb.set_trace()` where needed to inspect scoped variables etc
-from lib.tundex import tundexasked, dayssincetundexasked, whendidtundexask
+
+# import everything imported in functions.py - after adding a new
+# function file, be sure to import the file in functions.py
+from functions import *
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-dotenv_path = join(dir_path, '.env')
+dotenv_path = os.path.join(dir_path, ".env")
 load_dotenv(dotenv_path)
 
-# credentials
-TMI_TOKEN = os.environ.get('TMI_TOKEN')
-CLIENT_ID = os.environ.get('CLIENT_ID')
-BOT_NICK = os.environ.get('BOT_NICK')
-BOT_PREFIX = os.environ.get('BOT_PREFIX')
-CHANNEL = os.environ.get('CHANNEL')
+# get credentials
+TMI_TOKEN = os.environ.get("TMI_TOKEN")
+CLIENT_ID = os.environ.get("CLIENT_ID")
+BOT_NICK = os.environ.get("BOT_NICK")
+BOT_PREFIX = os.environ.get("BOT_PREFIX")
+CHANNEL = os.environ.get("CHANNEL")
 
-JSON_FILEPATH = str(os.path.dirname(os.path.realpath(__file__))) + '/data.json'
+# set path to file where data are stored
+JSON_FILEPATH = str(os.path.dirname(os.path.realpath(__file__))) + "/data.json"
 
-
+# initialise bot
 bot = commands.Bot(
     irc_token=TMI_TOKEN,
     client_id=CLIENT_ID,
     nick=BOT_NICK,
     prefix=BOT_PREFIX,
-    initial_channels=[CHANNEL]
+    initial_channels=[CHANNEL],
 )
 
-
+# hooks for bot loading and messages being sent in chat
 @bot.event
 async def event_ready():
-    """ Runs once the bot has established a connection with Twitch """
+    """Logs in console when successfully connected to Twitch"""
     print(f"{BOT_NICK} is online!")
 
 
 @bot.event
 async def event_message(ctx):
-    """ 
-    Runs every time a message is sent to the Twitch chat and relays it to the 
-    command callbacks 
-    """
-    # the bot should not react to itself
+    """Passes data to commands when a message is sent to chat"""
+    # stops bot from reacting to itself
     if ctx.author.name.lower() == BOT_NICK.lower():
         return
 
-    # relay message to command callbacks
+    # passes message data to command callbacks
     await bot.handle_commands(ctx)
 
 
-@bot.command(name='count')
+# commands, which call functions defined in lib - after adding a new
+# function file, be sure to import the file in functions.py
+@bot.command(name="count")
 async def on_count(ctx):
-    """
-    Runs when the count command was issued in the Twitch chat and sends the 
-    current count to the chat
-    """
-    count = get_count()
-    await ctx.send(f'current count {count}')
+    """Responds with current count"""
+    await count(ctx, JSON_FILEPATH)
 
 
-@bot.command(name='add')
+@bot.command(name="add")
 async def on_add(ctx):
-    """
-    Runs when the add command was issued in the Twitch chat and adds to the 
-    count
-    """
-    # check if user who issued the command is a mod
-    # if(ctx.author.is_mod):
-    if (True):
-
-        # parse add command
-        command_string = ctx.message.content
-        # remove '!add' and white space
-        command_string = command_string.replace('!add', '').strip()
-        # parse int
-        value = 0
-
-        try:
-            value = int(command_string) 
-        except ValueError:
-            value = 0
-
-        if value > 0:
-            # add to count
-            count = get_count()
-            count = count + value
-            update_count(count)
-            await ctx.send(f'updated count to {count}')
+    """Adds to count and responds with new count"""
+    await add(ctx, JSON_FILEPATH)
 
 
-@bot.command(name='sub')
+@bot.command(name="sub")
 async def on_sub(ctx):
-    """
-    Runs when the add command was issued in the Twitch chat and subtracts from 
-    the count
-    """
-    # check if user who issued the command is a mod
-    # if(ctx.author.is_mod):
-    if (True):
+    """Subtracts from count and responds with new counts"""
+    await sub(ctx, JSON_FILEPATH)
 
-        # parse sub command
-        command_string = ctx.message.content
-        # remove '!sub' and white space
-        command_string = command_string.replace('!sub', '').strip()
-        # parse int
-        value = 0
 
-        try:
-            value = int(command_string) 
-        except ValueError:
-            value = 0
-
-        if value > 0:
-            # subtract from count
-            count = get_count()
-            count = count - value
-            update_count(count)
-            await ctx.send(f'updated count to {count}')
-
-@bot.command(name='tundexasked')
+@bot.command(name="tundexasked")
 async def on_tundexasked(ctx):
+    """Sets the date when Tundex last asked and responds with confirmation"""
     await tundexasked(ctx, JSON_FILEPATH)
 
-@bot.command(name='dayssincetundexasked')
+
+@bot.command(name="dayssincetundexasked")
 async def on_dayssincetundexasked(ctx):
+    """Responds with the days since Tundex last asked"""
     await dayssincetundexasked(ctx, JSON_FILEPATH)
 
-@bot.command(name='whendidtundexask')
+
+@bot.command(name="whendidtundexask")
 async def on_whendidtundexask(ctx):
+    """Responds with the date Tundex last asked"""
     await whendidtundexask(ctx, JSON_FILEPATH)
 
-def get_count():
-    """ Reads the count from the JSON file and returns it """
-    with open(JSON_FILEPATH) as json_file:
-        data = json.load(json_file)
-        return data['count']
 
-def update_count(count):
-    """ Updates the JSON file with count given """
-    data = None
-
-    with open(JSON_FILEPATH) as json_file:
-        data = json.load(json_file)
-
-    if data is not None:
-        data['count'] = count
-
-    with open(JSON_FILEPATH, 'w') as json_file:
-        json.dump(data, json_file, sort_keys=True, indent=4)
-
-
+# launch bot
 if __name__ == "__main__":
-    # launch bot
     bot.run()
