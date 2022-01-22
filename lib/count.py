@@ -5,7 +5,12 @@ from .helpers.arguments import get_arguments
 
 async def count(ctx, json_filepath):
     count = get_count(json_filepath)
-    await ctx.send(f"Current count: {count}")
+
+    if count == None:
+        update_count(1, json_filepath)
+        await ctx.send(f"No previous count found. Count now set to 1")
+    else:
+        await ctx.send(f"Current count: {count}")
 
 
 async def add(ctx, json_filepath):
@@ -19,6 +24,10 @@ async def add(ctx, json_filepath):
 
     if value or value == 0:
         current_count = get_count(json_filepath)
+
+        if current_count == None:
+            current_count = 0
+
         new_count = current_count + value
         update_count(new_count, json_filepath)
         await ctx.send(f"Added {value} to count. New count: {new_count}")
@@ -35,6 +44,10 @@ async def sub(ctx, json_filepath):
 
     if value or value == 0:
         current_count = get_count(json_filepath)
+
+        if current_count == None:
+            current_count = 0
+
         new_count = current_count - value
         update_count(new_count, json_filepath)
         await ctx.send(f"Subtracted {value} from count. New count: {new_count}")
@@ -45,7 +58,10 @@ def get_count(json_filepath):
     """Reads the count from the JSON file and returns it"""
     with open(json_filepath) as json_file:
         data = json.load(json_file)
-        return data["count"]
+        try:
+            return data["count"]
+        except KeyError:
+            return None
 
 
 def update_count(new_count, json_filepath):
