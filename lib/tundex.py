@@ -1,10 +1,11 @@
 import datetime
 import json
 
+from .helpers.arguments import get_arguments
+
 
 async def tundexasked(ctx, json_filepath):
-    command_string = ctx.message.content
-    command_string = command_string.replace("!tundexasked", "").strip()
+    command_string = get_arguments(ctx)
 
     date = None
 
