@@ -40,13 +40,17 @@ async def event_ready():
 
 @bot.event
 async def event_message(ctx):
-    """Passes data to commands when a message is sent to chat"""
+    """Passes data to commands when a message is sent to chat
+    and greets users if they send a greeting from a list"""
     # stops bot from reacting to itself
     if ctx.author.name.lower() == BOT_NICK.lower():
         return
 
     # passes message data to command callbacks
     await bot.handle_commands(ctx)
+
+    # greets user if they send a greeting from a list (defined in function)
+    await hello(ctx)
 
 
 # commands, which call functions defined in lib - after adding a new

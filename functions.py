@@ -1,4 +1,5 @@
 from lib.count import *
+from lib.hello import *
 from lib.tundex import *
 
 # useful ctx commands
