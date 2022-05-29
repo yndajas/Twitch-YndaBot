@@ -17,7 +17,7 @@ TMI_TOKEN = os.environ.get("TMI_TOKEN")
 CLIENT_ID = os.environ.get("CLIENT_ID")
 BOT_NICK = os.environ.get("BOT_NICK")
 BOT_PREFIX = os.environ.get("BOT_PREFIX")
-CHANNEL = os.environ.get("CHANNEL")
+CHANNELS = os.environ.get("CHANNELS").split(",")
 
 # set path to file where data are stored
 JSON_FILEPATH = str(os.path.dirname(os.path.realpath(__file__))) + "/data.json"
@@ -28,7 +28,7 @@ bot = commands.Bot(
     client_id=CLIENT_ID,
     nick=BOT_NICK,
     prefix=BOT_PREFIX,
-    initial_channels=[CHANNEL],
+    initial_channels=CHANNELS,
 )
 
 # hooks for bot loading and messages being sent in chat

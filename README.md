@@ -2,7 +2,7 @@
 
 A custom Twitch chat bot with various commands.
 
- ## Setup
+## Setup
 
 *Adapted from [How to make your own Custom Twitch Chat Bot for Free | (incl. Download)](https://youtu.be/CPVSoowZhVw)*
 
@@ -27,7 +27,7 @@ Note: in order to run the bot locally, you'll need to install Python 3.
     2. After `CLIENT_ID=`, enter the client ID from step three in the previous section
     3. After `BOT_NICK=`, enter your bot's username
     4. You can leave `BOT_PREFIX=!` unchanged unless you want a different command prefix
-    5. After `CHANNEL=`, enter the channel you want the bot to work on
+    5. After `CHANNELS=`, enter the channels you want the bot to work on as a comma-separated list, e.g. `myChannel` for one channel, or `firstChannel,secondChannel` for two channels
 
 ## Running the bot
 
@@ -42,6 +42,7 @@ Assuming everything is working, it will say `<bot name> is online!` and the bot 
 **Greeting:** if a greeting from the list in [lib/greet.py](./lib/greet.py) is sent without tagging anyone, the bot will respond
 
 ### Commands
+
 #### Count
 
 - `!count` respond with the current count
@@ -58,18 +59,23 @@ Assuming everything is working, it will say `<bot name> is online!` and the bot 
 ## Adding commands
 
 To add a command, there are a few steps. For example, if you wanted to add a command that responded "GOAT" to `!outkast`, you would need to:
+
 1. In [bot.py](./bot.py), before the line `if __name__ == "__main__":`, enter:
+
 ```
 @bot.command(name="outkast")
 async def on_outkast(ctx):
     """An optional description of the command"""
     await outkast(ctx)
 ```
+
 2. Add a file called "outkast.py" to [lib](./lib) - the name doesn't actually matter, as long as you reference it properly in the next step, but you should provide a sensible name. In the file, add the following:
+
 ```
 async def outkast(ctx):
     await ctx.send("GOAT")
 ```
+
 3. In [functions.py](./functions.py), add `from lib.outkast import *` (or `from lib.outkast import outkast`)
 
 Note: this is a simple command that responds the same way every time. You could also make it respond to words added after the command in the user's message, and read and/or write to stored data. The existing commands provide examples of how to implement such functionality (all of them read/write data, and some of them parse words added after the command). Commands could also respond differently to different authors, or to authors who are mods versus authors who aren't. Examples of this functionality is not yet provided.
