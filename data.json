@@ -1,4 +1,18 @@
 {
-    "count": 42,
-    "tundexasked": "20001101"
+    // "count": 42,
+    // "tundexasked": "20220529",
+    "trevLsteinberg": {
+
+    },
+    "yndajas": {
+        "commands": {
+            "test": "woo, test!"
+        },
+        "config": {
+            "greet": true
+        },
+        "data": {
+
+        }
+    }
 }

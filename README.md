@@ -29,6 +29,9 @@ Note: in order to run the bot locally, you'll need to install Python 3.
     4. You can leave `BOT_PREFIX=!` unchanged unless you want a different command prefix
     5. After `CHANNELS=`, enter the channels you want the bot to work on as a comma-separated list, e.g. `myChannel` for one channel, or `firstChannel,secondChannel` for two channels
 
+NEW INSTRUCTIONS (using twitchio 2.3.0)
+do 1 and 2 above, then 3 but ignore first three variables and include token (access token) instead, using the value from TMI_TOKEN
+
 ## Running the bot
 
 After following the setup instructions and ensuring Python 3 is installed, from a terminal, enter `python3 bot.py`.

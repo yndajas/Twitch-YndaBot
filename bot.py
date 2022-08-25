@@ -35,6 +35,7 @@ bot = commands.Bot(
 @bot.event
 async def event_ready():
     """Logs in console when successfully connected to Twitch"""
+    # ipdb.set_trace()
     print(f"{BOT_NICK} is online!")
 
 
@@ -48,6 +49,8 @@ async def event_message(ctx):
 
     # passes message data to command callbacks
     await bot.handle_commands(ctx)
+
+    ipdb.set_trace()
 
     # greets user if they send a greeting from a list (defined in function)
     await greet(ctx)
